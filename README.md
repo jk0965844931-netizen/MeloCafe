@@ -23,6 +23,7 @@ Cemu is currently available for 64-bit Windows, Linux, macOS, and **iOS** (via L
  - [Cemu-Language](https://github.com/cemu-project/Cemu-Language)
  - [Cemu's Community Graphic Packs](https://github.com/cemu-project/cemu_graphic_packs)
  - [MeloCafe iOS](https://github.com/jk0965844931-netizen/MeloCafe) - iOS port with LiveContainer support
+ - [MeloCafe iOS](https://github.com/jk0965844931-netizen/MeloCafe) - iOS port with LiveContainer support
 
 ## Download
 
