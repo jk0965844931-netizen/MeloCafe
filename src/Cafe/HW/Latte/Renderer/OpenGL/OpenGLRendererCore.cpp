@@ -1,3 +1,7 @@
+#ifdef CEMU_PLATFORM_IOS
+#include "OpenGLCompat.h"
+#include "OpenGLShim.h"
+#endif
 #include "Common/GLInclude/GLInclude.h"
 
 #include "Cafe/HW/Latte/Core/LatteRingBuffer.h"

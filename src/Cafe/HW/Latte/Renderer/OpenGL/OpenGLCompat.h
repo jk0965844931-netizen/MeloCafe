@@ -1,3 +1,7 @@
+#ifdef CEMU_PLATFORM_IOS
+#include "OpenGLCompat.h"
+#include "OpenGLShim.h"
+#endif
 #pragma once
 
 // OpenGL ES Compatibility Header for iOS

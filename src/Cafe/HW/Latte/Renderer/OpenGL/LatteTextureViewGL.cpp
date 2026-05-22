@@ -1,3 +1,7 @@
+#ifdef CEMU_PLATFORM_IOS
+#include "OpenGLCompat.h"
+#include "OpenGLShim.h"
+#endif
 #include "Cafe/HW/Latte/Renderer/OpenGL/LatteTextureViewGL.h"
 #include "Cafe/HW/Latte/Renderer/OpenGL/LatteTextureGL.h"
 #include "Cafe/HW/Latte/Renderer/Renderer.h"

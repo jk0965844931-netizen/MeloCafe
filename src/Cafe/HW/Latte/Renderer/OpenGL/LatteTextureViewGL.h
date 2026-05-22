@@ -1,3 +1,7 @@
+#ifdef CEMU_PLATFORM_IOS
+#include "OpenGLCompat.h"
+#include "OpenGLShim.h"
+#endif
 #pragma once
 
 #include "Cafe/HW/Latte/Core/LatteTexture.h"
