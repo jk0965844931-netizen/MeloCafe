@@ -4,6 +4,12 @@ option(ENABLE_VCPKG "Enable the vcpkg package manager" ON)
 option(MACOS_BUNDLE "The executable when built on macOS will be created as an application bundle" OFF)
 option(ALLOW_PORTABLE "Allow Cemu to be run in portable mode" ON)
 
+# iOS detection
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+  set(IS_IOS TRUE)
+  message(STATUS "Building for iOS")
+endif()
+
 # used by CI script to set version:
 set(EMULATOR_VERSION_MAJOR "0" CACHE STRING "")
 set(EMULATOR_VERSION_MINOR "0" CACHE STRING "")
@@ -17,7 +23,7 @@ execute_process(
 )
 add_definitions(-DEMULATOR_HASH=${GIT_HASH})
 
-if (ENABLE_VCPKG)
+if (ENABLE_VCPKG AND NOT IS_IOS)
 	# check if vcpkg is shallow and unshallow it if necessary
 	execute_process(
 	COMMAND git rev-parse --is-shallow-repository
@@ -38,7 +44,7 @@ if (ENABLE_VCPKG)
 
 	if(UNIX AND NOT APPLE)
 		set(VCPKG_OVERLAY_PORTS "${CMAKE_CURRENT_LIST_DIR}/dependencies/vcpkg_overlay_ports_linux;${CMAKE_CURRENT_LIST_DIR}/dependencies/vcpkg_overlay_ports")
-	elseif(APPLE)
+	elseif(APPLE AND NOT IS_IOS)
 		set(VCPKG_OVERLAY_PORTS "${CMAKE_CURRENT_LIST_DIR}/dependencies/vcpkg_overlay_ports_mac;${CMAKE_CURRENT_LIST_DIR}/dependencies/vcpkg_overlay_ports")
 	else()
 		set(VCPKG_OVERLAY_PORTS "${CMAKE_CURRENT_LIST_DIR}/dependencies/vcpkg_overlay_ports_win;${CMAKE_CURRENT_LIST_DIR}/dependencies/vcpkg_overlay_ports")
@@ -93,10 +99,14 @@ endif()
 
 if (APPLE)
     enable_language(OBJC OBJCXX)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "12.0")
+    if(IS_IOS)
+      set(CMAKE_OSX_DEPLOYMENT_TARGET "14.0")
+    else()
+      set(CMAKE_OSX_DEPLOYMENT_TARGET "12.0")
+    endif()
 endif()
 
-if (UNIX AND NOT APPLE)
+if (UNIX AND NOT APPLE AND NOT IS_IOS)
 	option(ENABLE_WAYLAND "Build with Wayland support" ON)
 	option(ENABLE_FERAL_GAMEMODE "Enables Feral Interactive GameMode Support" ON)
 	option(ENABLE_BLUEZ "Build with Bluez support" ON)
@@ -126,13 +136,42 @@ option(ENABLE_CUBEB "Enabled cubeb backend" ON)
 
 option(ENABLE_WXWIDGETS "Build with wxWidgets UI (Currently required)" ON)
 
+# iOS-specific overrides
+if(IS_IOS)
+  message(STATUS "Configuring for iOS build - disabling incompatible features")
+  set(ENABLE_WXWIDGETS OFF CACHE BOOL "Disable wxWidgets on iOS" FORCE)
+  set(ENABLE_OPENGL OFF CACHE BOOL "Use OpenGL ES on iOS" FORCE)
+  set(ENABLE_VULKAN OFF CACHE BOOL "Disable Vulkan on iOS" FORCE)
+  set(ENABLE_BLUEZ OFF CACHE BOOL "Disable BlueZ on iOS" FORCE)
+  set(ENABLE_DISCORD_RPC OFF CACHE BOOL "Disable Discord RPC on iOS" FORCE)
+  set(ENABLE_HIDAPI OFF CACHE BOOL "Disable HIDAPI on iOS" FORCE)
+  set(ENABLE_CUBEB OFF CACHE BOOL "Disable cubeb on iOS (use iOS audio)" FORCE)
+  set(ENABLE_WAYLAND OFF CACHE BOOL "Disable Wayland on iOS" FORCE)
+  set(ENABLE_FERAL_GAMEMODE OFF CACHE BOOL "Disable GameMode on iOS" FORCE)
+  set(ENABLE_VCPKG OFF CACHE BOOL "Disable vcpkg on iOS" FORCE)
+  add_definitions(-DTARGET_OS_IPHONE=1)
+  add_definitions(-DUSE_GLES=1)
+endif()
+
 set(THREADS_PREFER_PTHREAD_FLAG true)
 find_package(Threads REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(CURL REQUIRED)
 find_package(pugixml REQUIRED)
 find_package(RapidJSON REQUIRED)
-find_package(Boost COMPONENTS program_options filesystem nowide REQUIRED)
+
+# Boost - iOS needs special handling
+if(IS_IOS)
+  # For iOS, we may need to build Boost manually or use a pre-built version
+  # For now, try to find it system-wide
+  find_package(Boost COMPONENTS program_options filesystem nowide)
+  if(NOT Boost_FOUND)
+    message(STATUS "Boost not found - may need to build manually for iOS")
+  endif()
+else()
+  find_package(Boost COMPONENTS program_options filesystem nowide REQUIRED)
+endif()
+
 find_package(libzip REQUIRED)
 find_package(glslang REQUIRED)
 find_package(ZLIB REQUIRED)
@@ -147,7 +186,7 @@ if (NOT TARGET glslang::SPIRV AND TARGET SPIRV)
 	add_library(glslang::SPIRV ALIAS SPIRV)
 endif()
 
-if (UNIX AND NOT APPLE)
+if (UNIX AND NOT APPLE AND NOT IS_IOS)
 	find_package(X11 REQUIRED)
 	if (ENABLE_WAYLAND)
 		find_package(Wayland REQUIRED Client)
@@ -172,25 +211,32 @@ if (UNIX AND NOT APPLE)
 
 endif()
 
-if (ENABLE_VULKAN)
+if (ENABLE_VULKAN AND NOT IS_IOS)
 	include_directories("dependencies/Vulkan-Headers/include")
 endif()
 
-if (ENABLE_OPENGL)
+if (ENABLE_OPENGL AND NOT IS_IOS)
 	find_package(OpenGL REQUIRED)
 endif()
 
-if (ENABLE_DISCORD_RPC)
+# For iOS, use OpenGL ES (ES 3.0+)
+if(IS_IOS)
+  # OpenGL ES headers come with iOS SDK
+  add_compile_definitions(USE_GLES=1)
+  add_compile_definitions(GLES_SILENCE_DEPRECATION=1)
+endif()
+
+if (ENABLE_DISCORD_RPC AND NOT IS_IOS)
 	add_compile_definitions(ENABLE_DISCORD_RPC)
 endif()
 
-if (ENABLE_HIDAPI)
+if (ENABLE_HIDAPI AND NOT IS_IOS)
 	find_package(hidapi REQUIRED)
 	set(SUPPORTS_WIIMOTE ON)
 	add_compile_definitions(HAS_HIDAPI)
 endif ()
 
-if(UNIX AND NOT APPLE)
+if(UNIX AND NOT APPLE AND NOT IS_IOS)
 	if(ENABLE_FERAL_GAMEMODE)
 		add_compile_definitions(ENABLE_FERAL_GAMEMODE)
 		add_subdirectory(dependencies/gamemode EXCLUDE_FROM_ALL)
@@ -198,11 +244,11 @@ if(UNIX AND NOT APPLE)
 	endif()
 endif()
 
-if (ENABLE_WXWIDGETS)
+if (ENABLE_WXWIDGETS AND NOT IS_IOS)
 	find_package(wxWidgets 3.3 REQUIRED COMPONENTS base core gl propgrid xrc)
 endif()
 
-if (ENABLE_CUBEB)
+if (ENABLE_CUBEB AND NOT IS_IOS)
 	if (NOT ENABLE_VCPKG)
 	find_package(cubeb)
 	endif()
