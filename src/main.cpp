@@ -7,6 +7,9 @@
 // iOS-specific includes
 #if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
 #include "iosgui/IOSGui.h"
+#include "ios/iOSMain.h"
+#include "Cafe/HW/Latte/Renderer/OpenGL/OpenGLCompat.h"
+#include "Cafe/HW/Latte/Renderer/OpenGL/OpenGLShim.h"
 #endif
 #include "util/crypto/aes128.h"
 #include "Cafe/OS/RPL/rpl.h"

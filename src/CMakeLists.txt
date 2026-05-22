@@ -40,6 +40,7 @@ add_compile_definitions(VK_NO_PROTOTYPES)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 add_subdirectory(Common)
+add_subdirectory(ios)  # iOS-specific code
 add_subdirectory(gui)
 add_subdirectory(Cafe)
 add_subdirectory(Cemu)

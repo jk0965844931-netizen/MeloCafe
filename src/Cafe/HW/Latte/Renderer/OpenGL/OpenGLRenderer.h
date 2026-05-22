@@ -1,4 +1,14 @@
 #pragma once
+
+// Include OpenGL ES compatibility for iOS
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+#endif
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+#include "OpenGLCompat.h"
+#include "OpenGLShim.h"
+#endif
+
 #include "Common/GLInclude/GLInclude.h"
 
 #include "Cafe/HW/Latte/Renderer/Renderer.h"
