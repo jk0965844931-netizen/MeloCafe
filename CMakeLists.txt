@@ -246,6 +246,9 @@ endif()
 
 if (ENABLE_WXWIDGETS AND NOT IS_IOS)
 	find_package(wxWidgets 3.3 REQUIRED COMPONENTS base core gl propgrid xrc)
+elseif(ENABLE_WXWIDGETS AND IS_IOS)
+	message(WARNING "wxWidgets is enabled on iOS but not supported. Disabling...")
+	set(ENABLE_WXWIDGETS OFF CACHE BOOL "wxWidgets not supported on iOS" FORCE)
 endif()
 
 if (ENABLE_CUBEB AND NOT IS_IOS)

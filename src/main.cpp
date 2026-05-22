@@ -1,4 +1,13 @@
 #include "WindowSystem.h"
+
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+#endif
+
+// iOS-specific includes
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+#include "iosgui/IOSGui.h"
+#endif
 #include "util/crypto/aes128.h"
 #include "Cafe/OS/RPL/rpl.h"
 #include "Cafe/OS/libs/gx2/GX2.h"
@@ -252,7 +261,21 @@ int main(int argc, char *argv[])
 #endif
     if (!LaunchSettings::HandleCommandline(argc, argv))
 		return 0;
-	WindowSystem::Create();
+	
+	#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+		// iOS uses its own main loop
+		gui::init();
+		CemuCommonInit();
+		while(true)
+		{
+			gui::mainLoop();
+			gui::update();
+			gui::draw();
+		}
+		gui::shutdown();
+	#else
+		WindowSystem::Create();
+	#endif
 	return 0;
 }
 #endif
