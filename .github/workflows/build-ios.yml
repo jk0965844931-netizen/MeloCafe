@@ -53,6 +53,12 @@ jobs:
           cd dependencies/vcpkg
           ./bootstrap-vcpkg.sh
 
+      - name: Apply pre-emptive build fixes
+        run: |
+          chmod +x apply-all-fixes.sh fix-opengl-headers.sh fix-shader-versions.sh
+          ./apply-all-fixes.sh
+          echo "Pre-emptive fixes applied!"
+
       - name: Configure CMake for iOS
         run: |
           cmake -S . -B build-ios \
