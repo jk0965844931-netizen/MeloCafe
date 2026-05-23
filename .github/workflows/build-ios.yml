@@ -56,6 +56,11 @@ jobs:
           cd dependencies/vcpkg
           ./bootstrap-vcpkg.sh
 
+      - name: Install vcpkg dependencies
+        run: |
+          cd dependencies/vcpkg
+          ./vcpkg install --triplet arm64-ios pugixml zstd libzip rapidjson sdl2 boost-variant boost-optional boost-signals2 boost-asio boost-property-tree boost-program-options boost-filesystem boost-nowide glslang openssl curl zlib --recurse
+
       - name: Apply pre-emptive build fixes
         run: |
           chmod +x apply-all-fixes.sh fix-opengl-headers.sh fix-shader-versions.sh || true
