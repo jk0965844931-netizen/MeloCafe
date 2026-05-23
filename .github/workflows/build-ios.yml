@@ -48,7 +48,15 @@ jobs:
 
       - name: Build MeloCafe
         run: |
-          cmake --build build-ios --config Release -j$(sysctl -n hw.ncpu)
+          cmake --build build-ios --config Release -j$(sysctl -n hw.ncpu) \
+            2>&1 | tee build-output.log || exit 1
+
+      - name: Upload build output (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output-log
+          path: build-output.log
 
       - name: Create app bundle
         run: |
