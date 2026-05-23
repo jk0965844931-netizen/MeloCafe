@@ -81,13 +81,15 @@ jobs:
           mkdir -p "$APP_BUNDLE"
 
           # Copy executable
-          if [ -f "build-ios/bin/Cemu_release" ]; then
-            cp build-ios/bin/Cemu_release "$APP_BUNDLE/MeloCafe"
+          if [ -f "build-ios/bin/CemuBin" ]; then
+            cp build-ios/bin/CemuBin "$APP_BUNDLE/MeloCafe"
           elif [ -f "build-ios/bin/Cemu" ]; then
             cp build-ios/bin/Cemu "$APP_BUNDLE/MeloCafe"
+          elif [ -f "build-ios/bin/Cemu_release" ]; then
+            cp build-ios/bin/Cemu_release "$APP_BUNDLE/MeloCafe"
           else
             echo "Error: Executable not found"
-            find build-ios -type f -name "Cemu*" -o -name "Cemu_release*"
+            find build-ios -type f -executable
             exit 1
           fi
 
