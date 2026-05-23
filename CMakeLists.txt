@@ -8,6 +8,8 @@ option(ALLOW_PORTABLE "Allow Cemu to be run in portable mode" ON)
 if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
   set(IS_IOS TRUE)
   message(STATUS "Building for iOS")
+  # Disable vcpkg for iOS builds
+  set(ENABLE_VCPKG OFF CACHE BOOL "Disable vcpkg for iOS" FORCE)
 endif()
 
 # used by CI script to set version:
