@@ -50,10 +50,10 @@ jobs:
 
       - name: Setup vcpkg
         run: |
-          if [ ! -d "vcpkg" ]; then
-            git clone https://github.com/Microsoft/vcpkg.git
+          if [ ! -d "dependencies/vcpkg" ]; then
+            git clone https://github.com/Microsoft/vcpkg.git dependencies/vcpkg
           fi
-          cd vcpkg
+          cd dependencies/vcpkg
           ./bootstrap-vcpkg.sh
 
       - name: Apply pre-emptive build fixes
