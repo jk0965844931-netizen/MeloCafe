@@ -1,0 +1,44 @@
+name: Test iOS CMake Configuration
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-cmake:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          submodules: 'recursive'
+
+      - name: Install dependencies
+        run: |
+          brew install ninja cmake
+
+      - name: Test CMake Configuration (verbose)
+        run: |
+          set -x
+          echo "=== Testing basic CMake setup ==="
+          cmake --version
+          echo ""
+
+          echo "=== Testing toolchain file exists ==="
+          ls -la .github/ios-build-toolchain.cmake
+          cat .github/ios-build-toolchain.cmake
+          echo ""
+
+          echo "=== Testing CMake configuration ==="
+          cmake -S . -B build-ios \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_TOOLCHAIN_FILE=.github/ios-build-toolchain.cmake \
+            -DENABLE_VCPKG=OFF \
+            -G Ninja \
+            --trace \
+            2>&1 | tee cmake-output.log || true
+
+          echo ""
+          echo "=== CMake output summary ==="
+          tail -100 cmake-output.log
