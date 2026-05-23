@@ -60,12 +60,12 @@ jobs:
 
       - name: List build output
         run: |
-          echo "=== build-ios directory structure ===" > build-listing.txt
-          find build-ios -type f -name "Cemu*" 2>/dev/null >> build-listing.txt || true
-          echo "=== All executables ===" >> build-listing.txt
-          find build-ios -type f -executable 2>/dev/null | head -20 >> build-listing.txt || true
-          echo "=== build-ios/bin directory ===" >> build-listing.txt
-          ls -la build-ios/bin/ 2>/dev/null >> build-listing.txt || echo "bin/ not found" >> build-listing.txt
+          echo "=== Full build-ios directory structure ===" > build-listing.txt
+          tree build-ios 2>/dev/null || find build-ios -type f >> build-listing.txt || echo "No files found" >> build-listing.txt
+          echo "\n=== CMakeCache.txt relevant entries ===" >> build-listing.txt
+          grep -E "CMAKE_RUNTIME_OUTPUT_DIRECTORY|EXECUTABLE_OUTPUT_PATH|CemuBin" build-ios/CMakeCache.txt 2>/dev/null || echo "CMakeCache.txt not found" >> build-listing.txt
+          echo "\n=== build-ios directory listing ===" >> build-listing.txt
+          ls -la build-ios/ >> build-listing.txt
           cat build-listing.txt
 
       - name: Upload build listing (always)
