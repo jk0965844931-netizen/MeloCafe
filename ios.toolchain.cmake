@@ -34,7 +34,7 @@ set(ENABLE_SDL ON CACHE BOOL "Enable SDL on iOS" FORCE)
 set(ENABLE_BLUEZ OFF CACHE BOOL "Disable BlueZ on iOS" FORCE)
 set(ENABLE_DISCORD_RPC OFF CACHE BOOL "Disable Discord RPC on iOS" FORCE)
 set(ENABLE_HIDAPI OFF CACHE BOOL "Disable HIDAPI on iOS" FORCE)
-set(ENABLE_VCPKG OFF CACHE BOOL "Disable vcpkg for iOS custom build" FORCE)
+set(ENABLE_VCPKG ON CACHE BOOL "Enable vcpkg for iOS" FORCE)
 set(ENABLE_CUBEB OFF CACHE BOOL "Disable cubeb on iOS" FORCE)
 
 # iOS-specific compile definitions
