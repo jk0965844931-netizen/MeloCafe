@@ -37,7 +37,14 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE=.github/ios-build-toolchain.cmake \
             -DENABLE_VCPKG=OFF \
             -G Ninja \
-            || exit 1
+            2>&1 | tee cmake-output.log || exit 1
+
+      - name: Upload CMake output (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cmake-output-log
+          path: cmake-output.log
 
       - name: Build MeloCafe
         run: |
