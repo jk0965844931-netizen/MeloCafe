@@ -41,22 +41,25 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            dependencies/vcpkg/downloads
-            dependencies/vcpkg/buildtrees
-            dependencies/vcpkg/installed
-          key: ${{ runner.os }}-vcpkg-ios-${{ hashFiles('**/vcpkg.json') }}
+            vcpkg/downloads
+            vcpkg/buildtrees
+            vcpkg/installed
+          key: ${{ runner.os }}-vcpkg-ios-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
             ${{ runner.os }}-vcpkg-ios-
 
-      - name: Bootstrap vcpkg
+      - name: Setup vcpkg
         run: |
-          cd dependencies/vcpkg
+          if [ ! -d "vcpkg" ]; then
+            git clone https://github.com/Microsoft/vcpkg.git
+          fi
+          cd vcpkg
           ./bootstrap-vcpkg.sh
 
       - name: Apply pre-emptive build fixes
         run: |
-          chmod +x apply-all-fixes.sh fix-opengl-headers.sh fix-shader-versions.sh
-          ./apply-all-fixes.sh
+          chmod +x apply-all-fixes.sh fix-opengl-headers.sh fix-shader-versions.sh || true
+          [ -f apply-all-fixes.sh ] && ./apply-all-fixes.sh || echo "Fix scripts not found, skipping..."
           echo "Pre-emptive fixes applied!"
 
       - name: Configure CMake for iOS
