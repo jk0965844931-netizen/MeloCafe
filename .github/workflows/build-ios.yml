@@ -40,9 +40,11 @@ jobs:
 
       - name: Apply pre-emptive build fixes
         run: |
-          chmod +x apply-all-fixes.sh fix-opengl-headers.sh fix-shader-versions.sh || true
-          [ -f apply-all-fixes.sh ] && ./apply-all-fixes.sh || echo "Fix scripts not found, skipping..."
-          echo "Pre-emptive fixes applied!"
+          # Temporarily disabled - fixes are breaking CMake configuration
+          echo "Skipping pre-emptive build fixes for debugging..."
+          # chmod +x apply-all-fixes.sh fix-opengl-headers.sh fix-shader-versions.sh || true
+          # [ -f apply-all-fixes.sh ] && ./apply-all-fixes.sh || echo "Fix scripts not found, skipping..."
+          echo "Pre-emptive fixes SKIPPED!"
 
       - name: Configure CMake for iOS
         run: |
