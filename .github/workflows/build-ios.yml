@@ -38,36 +38,6 @@ jobs:
           brew update
           brew install cmake ninja nasm
 
-      - name: Cache vcpkg dependencies
-        id: cache-vcpkg
-        uses: actions/cache@v4
-        with:
-          path: |
-            dependencies/vcpkg/downloads
-            dependencies/vcpkg/buildtrees
-            dependencies/vcpkg/installed
-          key: ${{ runner.os }}-vcpkg-ios-${{ hashFiles('vcpkg.json') }}
-          restore-keys: |
-            ${{ runner.os }}-vcpkg-ios-
-
-      - name: Setup vcpkg
-        run: |
-          if [ ! -d "dependencies/vcpkg" ]; then
-            git clone https://github.com/Microsoft/vcpkg.git dependencies/vcpkg
-          fi
-          cd dependencies/vcpkg
-          ./bootstrap-vcpkg.sh
-
-      - name: Install vcpkg dependencies
-        run: |
-          cd dependencies/vcpkg
-          # Try to install vcpkg dependencies for iOS
-          # Many packages won't work on iOS, so allow this to fail gracefully
-          set +e
-          ./vcpkg install --triplet arm64-ios 2>&1 | head -50 || true
-          echo "vcpkg install completed (partial install is OK for iOS)"
-          set -e
-
       - name: Apply pre-emptive build fixes
         run: |
           chmod +x apply-all-fixes.sh fix-opengl-headers.sh fix-shader-versions.sh || true
@@ -76,18 +46,9 @@ jobs:
 
       - name: Configure CMake for iOS
         run: |
-          cp .github/ios-build-toolchain.cmake ios-vcpkg-toolchain.cmake
-          
           cmake -S . -B build-ios \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_TOOLCHAIN_FILE=ios-vcpkg-toolchain.cmake \
-            -DCMAKE_SYSTEM_NAME=iOS \
-            -DCMAKE_OSX_ARCHITECTURES=arm64 \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0 \
-            -DVCPKG_TARGET_TRIPLET=arm64-ios \
-            -DVCPKG_OVERLAY_PORTS=dependencies/vcpkg/ports \
-            -DCMAKE_C_FLAGS="-fvisibility=hidden -fno-common" \
-            -DCMAKE_CXX_FLAGS="-fvisibility=hidden -fvisibility-inlines-hidden -fno-common" \
+            -DCMAKE_TOOLCHAIN_FILE=.github/ios-build-toolchain.cmake \
             -G Ninja
 
       - name: Build MeloCafe
