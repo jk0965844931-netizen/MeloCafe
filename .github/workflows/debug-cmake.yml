@@ -1,0 +1,50 @@
+name: Debug CMake Configuration
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug-cmake:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          submodules: 'recursive'
+
+      - name: Install dependencies
+        run: |
+          brew install ninja cmake
+
+      - name: Run CMake with full logging
+        run: |
+          set -x
+          echo "=== Running CMake configuration ==="
+          cmake -S . -B build-ios \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_TOOLCHAIN_FILE=.github/ios-build-toolchain.cmake \
+            -DENABLE_VCPKG=OFF \
+            -G Ninja \
+            2>&1 | tee cmake-output.log || {
+            echo "=== CMake configuration failed! ==="
+            echo "Exit code: $?"
+            exit 1
+          }
+
+      - name: Upload CMake output log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cmake-output-log
+          path: cmake-output.log
+          retention-days: 7
+
+      - name: Upload CMake build directory (if created)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cmake-build-dir
+          path: build-ios/
+          retention-days: 7
