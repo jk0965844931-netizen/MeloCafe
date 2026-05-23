@@ -19,24 +19,9 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Select Xcode version
-        run: |
-          # Use default Xcode (16.4 on macos-15-arm64)
-          echo "Using default Xcode on macos-15-arm64"
-          xcodebuild -version
-
-      - name: Show Xcode version
-        run: |
-          echo "=== Xcode Version ==="
-          xcodebuild -version
-          echo ""
-          echo "=== Available SDKs ==="
-          xcodebuild -showsdks
-
       - name: Install dependencies
         run: |
-          brew update
-          brew install cmake ninja nasm
+          brew install ninja cmake
 
       - name: Apply pre-emptive build fixes
         run: |
@@ -52,7 +37,8 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_TOOLCHAIN_FILE=.github/ios-build-toolchain.cmake \
             -DENABLE_VCPKG=OFF \
-            -G Ninja
+            -G Ninja \
+            || exit 1
 
       - name: Build MeloCafe
         run: |
