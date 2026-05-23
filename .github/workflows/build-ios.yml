@@ -41,9 +41,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            vcpkg/downloads
-            vcpkg/buildtrees
-            vcpkg/installed
+            dependencies/vcpkg/downloads
+            dependencies/vcpkg/buildtrees
+            dependencies/vcpkg/installed
           key: ${{ runner.os }}-vcpkg-ios-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
             ${{ runner.os }}-vcpkg-ios-
@@ -59,7 +59,10 @@ jobs:
       - name: Install vcpkg dependencies
         run: |
           cd dependencies/vcpkg
-          ./vcpkg install --triplet arm64-ios pugixml zstd libzip rapidjson sdl2 boost-variant boost-optional boost-signals2 boost-asio boost-property-tree boost-program-options boost-filesystem boost-nowide glslang openssl curl zlib --recurse
+          # Use manifest file - vcpkg will skip non-iOS packages automatically
+          ./vcpkg install --triplet arm64-ios --x-use-aria2 || \
+          (echo "Partial install failed, retrying without aria2..." && \
+           ./vcpkg install --triplet arm64-ios)
 
       - name: Apply pre-emptive build fixes
         run: |
