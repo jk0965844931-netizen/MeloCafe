@@ -75,43 +75,19 @@ jobs:
 
       - name: Configure CMake for iOS
         run: |
-          # Create a combined toolchain file
-          cat > ios-vcpkg-toolchain.cmake <<'EOF'
-  # iOS CMake Toolchain File with vcpkg support
-  set(CMAKE_SYSTEM_NAME iOS)
-  set(CMAKE_SYSTEM_VERSION 14.0)
-  set(CMAKE_OSX_ARCHITECTURES arm64)
-  set(CMAKE_OSX_DEPLOYMENT_TARGET 14.0)
-  set(CMAKE_OSX_SYSROOT iphoneos)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fembed-bitcode")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fembed-bitcode")
-  
-  # iOS-specific compile definitions
-  add_definitions(-DTARGET_OS_IPHONE=1)
-  add_definitions(-D__APPLE__=1)
-  
-  # Disable problematic features on iOS
-  set(ENABLE_OPENGL OFF CACHE BOOL "" FORCE)
-  set(ENABLE_VULKAN OFF CACHE BOOL "" FORCE)
-  set(ENABLE_WXWIDGETS OFF CACHE BOOL "" FORCE)
-  set(ENABLE_SDL ON CACHE BOOL "" FORCE)
-  set(ENABLE_BLUEZ OFF CACHE BOOL "" FORCE)
-  set(ENABLE_DISCORD_RPC OFF CACHE BOOL "" FORCE)
-  set(ENABLE_HIDAPI OFF CACHE BOOL "" FORCE)
-  set(ENABLE_CUBEB OFF CACHE BOOL "" FORCE)
-  EOF
-  
-  cmake -S . -B build-ios \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_TOOLCHAIN_FILE=ios-vcpkg-toolchain.cmake \
-    -DCMAKE_SYSTEM_NAME=iOS \
-    -DCMAKE_OSX_ARCHITECTURES=arm64 \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0 \
-    -DVCPKG_TARGET_TRIPLET=arm64-ios \
-    -DVCPKG_OVERLAY_PORTS=dependencies/vcpkg/ports \
-    -DCMAKE_C_FLAGS="-fvisibility=hidden -fno-common" \
-    -DCMAKE_CXX_FLAGS="-fvisibility=hidden -fvisibility-inlines-hidden -fno-common" \
-    -G Ninja
+          cp .github/ios-build-toolchain.cmake ios-vcpkg-toolchain.cmake
+          
+          cmake -S . -B build-ios \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_TOOLCHAIN_FILE=ios-vcpkg-toolchain.cmake \
+            -DCMAKE_SYSTEM_NAME=iOS \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0 \
+            -DVCPKG_TARGET_TRIPLET=arm64-ios \
+            -DVCPKG_OVERLAY_PORTS=dependencies/vcpkg/ports \
+            -DCMAKE_C_FLAGS="-fvisibility=hidden -fno-common" \
+            -DCMAKE_CXX_FLAGS="-fvisibility=hidden -fvisibility-inlines-hidden -fno-common" \
+            -G Ninja
 
       - name: Build MeloCafe
         run: |
