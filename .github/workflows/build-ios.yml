@@ -60,10 +60,19 @@ jobs:
 
       - name: List build output
         run: |
-          echo "=== build-ios directory structure ==="
-          find build-ios -type f -name "Cemu*" 2>/dev/null || true
-          echo "=== All executables ==="
-          find build-ios -type f -executable 2>/dev/null | head -20 || true
+          echo "=== build-ios directory structure ===" > build-listing.txt
+          find build-ios -type f -name "Cemu*" 2>/dev/null >> build-listing.txt || true
+          echo "=== All executables ===" >> build-listing.txt
+          find build-ios -type f -executable 2>/dev/null | head -20 >> build-listing.txt || true
+          echo "=== build-ios/bin directory ===" >> build-listing.txt
+          ls -la build-ios/bin/ 2>/dev/null >> build-listing.txt || echo "bin/ not found" >> build-listing.txt
+          cat build-listing.txt
+
+      - name: Upload build listing (always)
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-listing
+          path: build-listing.txt
 
       - name: Create app bundle
         run: |
