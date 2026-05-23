@@ -36,6 +36,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_TOOLCHAIN_FILE=.github/ios-build-toolchain.cmake \
             -DENABLE_VCPKG=OFF \
+            -DIS_IOS=ON \
             -G Ninja \
             2>&1 | tee cmake-output.log || exit 1
 
