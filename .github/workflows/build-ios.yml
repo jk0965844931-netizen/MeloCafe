@@ -49,6 +49,7 @@ jobs:
           cmake -S . -B build-ios \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_TOOLCHAIN_FILE=.github/ios-build-toolchain.cmake \
+            -DENABLE_VCPKG=OFF \
             -G Ninja
 
       - name: Build MeloCafe
