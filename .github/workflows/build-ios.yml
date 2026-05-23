@@ -49,8 +49,13 @@ jobs:
 
       - name: Build MeloCafe
         run: |
-          cmake --build build-ios --config Release -j$(sysctl -n hw.ncpu) \
+          cmake --build build-ios --config Release -j$(sysctl -n hw.ncpu) --verbose \
             2>&1 | tee build-output.log || exit 1
+          echo "=== Build verification ==="
+          find build-ios -type f -name "Cemu*" 2>/dev/null || echo "No Cemu files found"
+          find build-ios -type f -executable 2>/dev/null | head -10 || echo "No executables found"
+          echo "=== build-ios directory structure ==="
+          ls -la build-ios/ || true
 
       - name: Upload build output (on failure)
         if: failure()
