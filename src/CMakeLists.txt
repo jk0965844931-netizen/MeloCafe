@@ -145,7 +145,35 @@ target_link_libraries(CemuBin PRIVATE
 	CemuGui
 	CemuInput
 	CemuUtil
-	OpenGL::GL
+)
+
+if(IS_IOS)
+	# iOS uses OpenGL ES framework
+	find_library(OPENGLES_FRAMEWORK OpenGLES)
+	find_library(OPENGL_FRAMEWORK OpenGL)
+	find_library(COREVIDEO_FRAMEWORK CoreVideo)
+	find_library(COREFOUNDATION_FRAMEWORK CoreFoundation)
+	find_library(UIKIT_FRAMEWORK UIKit)
+	find_library(QUARTZCORE_FRAMEWORK QuartzCore)
+	find_library(AVFOUNDATION_FRAMEWORK AVFoundation)
+	find_library(AUDIOFRAMEWORK AudioToolbox)
+	target_link_libraries(CemuBin PRIVATE
+		${OPENGLES_FRAMEWORK}
+		${OPENGL_FRAMEWORK}
+		${COREVIDEO_FRAMEWORK}
+		${COREFOUNDATION_FRAMEWORK}
+		${UIKIT_FRAMEWORK}
+		${QUARTZCORE_FRAMEWORK}
+		${AVFOUNDATION_FRAMEWORK}
+		${AUDIOFRAMEWORK}
+	)
+else()
+	target_link_libraries(CemuBin PRIVATE
+		OpenGL::GL
+	)
+endif()
+
+target_link_libraries(CemuBin PRIVATE
 	SDL2::SDL2
 )
 
