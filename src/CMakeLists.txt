@@ -40,13 +40,6 @@ add_compile_definitions(VK_NO_PROTOTYPES)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 add_subdirectory(Common)
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/ios/CMakeLists.txt")
-    add_subdirectory(ios)  # iOS-specific code
-elseif(IS_IOS)
-    message(STATUS "iOS stub GUI directory not found, using placeholder")
-else()
-    add_subdirectory(ios)  # iOS-specific code
-endif()
 add_subdirectory(gui)
 add_subdirectory(Cafe)
 add_subdirectory(Cemu)
@@ -61,6 +54,15 @@ add_executable(CemuBin
 	main.cpp
 	mainLLE.cpp
 )
+
+# iOS-specific code (must be after add_executable)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/ios/CMakeLists.txt")
+    add_subdirectory(ios)  # iOS-specific code
+elseif(IS_IOS)
+    message(STATUS "iOS stub GUI directory not found, using placeholder")
+else()
+    add_subdirectory(ios)  # iOS-specific code
+endif()
 
 if(MSVC AND MSVC_VERSION EQUAL 1940)
 	# workaround for an msvc issue on VS 17.10 where generated ILK files are too large
