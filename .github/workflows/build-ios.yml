@@ -20,7 +20,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install ninja cmake sdl2 pkg-config curl openssl rapidjson pugixml glm zstd libzip
+          brew install ninja cmake
+          # Install vcpkg for iOS cross-compilation dependencies
+          git clone https://github.com/Microsoft/vcpkg.git
+          cd vcpkg
+          ./bootstrap-vcpkg.sh
+          cd ..
+          # Set vcpkg triplets for iOS
+          export VCPKG_ROOT=$(pwd)/vcpkg
+          echo "VCPKG_ROOT=$VCPKG_ROOT" >> $GITHUB_ENV
 
       - name: Apply pre-emptive build fixes
         run: |
@@ -31,13 +39,16 @@ jobs:
           echo "Pre-emptive fixes SKIPPED!"
 
       - name: Configure CMake for iOS
+        env:
+          VCPKG_ROOT: ${{ github.workspace }}/vcpkg
         run: |
           cmake -S . -B build-ios \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_TOOLCHAIN_FILE=.github/ios-build-toolchain.cmake \
-            -DENABLE_VCPKG=OFF \
+            -DENABLE_VCPKG=ON \
+            -DVCPKG_TARGET_TRIPLET=arm64-ios \
+            -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake \
             -DIS_IOS=ON \
-            -DCMAKE_PREFIX_PATH="$(brew --prefix sdl2):$(brew --prefix openssl):$(brew --prefix curl):$(brew --prefix glm):$(brew --prefix zstd):$(brew --prefix libzip)" \
             -G Ninja \
             2>&1 | tee cmake-output.log || exit 1
 
