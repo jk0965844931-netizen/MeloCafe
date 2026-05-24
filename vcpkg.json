@@ -39,7 +39,8 @@
       "features": [
         "debug-support"
       ],
-      "default-features": false
+      "default-features": false,
+      "platform": "!ios"
     },
     "openssl",
     {
