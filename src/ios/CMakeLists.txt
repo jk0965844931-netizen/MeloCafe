@@ -1,4 +1,4 @@
-// iOS-specific source files
+# iOS-specific source files
 
 set(IOS_SOURCES
     ios/iOSApp.cpp
