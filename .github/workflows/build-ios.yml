@@ -41,13 +41,14 @@ jobs:
       - name: Configure CMake for iOS
         env:
           VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+          VCPKG_DEFAULT_TRIPLET: arm64-ios
         run: |
           cmake -S . -B build-ios \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_TOOLCHAIN_FILE=.github/ios-build-toolchain.cmake \
-            -DENABLE_VCPKG=ON \
-            -DVCPKG_TARGET_TRIPLET=arm64-ios \
             -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake \
+            -DVCPKG_OVERLAY_TRIPLETS=${VCPKG_ROOT}/triplets/community \
+            -DVCPKG_TARGET_TRIPLET=arm64-ios \
+            -DENABLE_VCPKG=ON \
             -DIS_IOS=ON \
             -G Ninja \
             2>&1 | tee cmake-output.log || exit 1
