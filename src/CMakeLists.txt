@@ -40,7 +40,13 @@ add_compile_definitions(VK_NO_PROTOTYPES)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 add_subdirectory(Common)
-add_subdirectory(ios)  # iOS-specific code
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/ios/CMakeLists.txt")
+    add_subdirectory(ios)  # iOS-specific code
+elseif(IS_IOS)
+    message(STATUS "iOS stub GUI directory not found, using placeholder")
+else()
+    add_subdirectory(ios)  # iOS-specific code
+endif()
 add_subdirectory(gui)
 add_subdirectory(Cafe)
 add_subdirectory(Cemu)
