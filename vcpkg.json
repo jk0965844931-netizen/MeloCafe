@@ -61,10 +61,6 @@
         "jpeg",
         "zip"
       ]
-    },
-    {
-      "name": "libusb",
-      "platform": "!ios"
     }
   ],
   "overrides": [
