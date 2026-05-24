@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install ninja cmake
+          brew install ninja cmake sdl2 pkg-config curl openssl rapidjson pugixml glm zstd libzip
 
       - name: Apply pre-emptive build fixes
         run: |
