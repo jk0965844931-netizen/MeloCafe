@@ -62,7 +62,10 @@
         "zip"
       ]
     },
-    "libusb"
+    {
+      "name": "libusb",
+      "platform": "!ios"
+    }
   ],
   "overrides": [
     {
