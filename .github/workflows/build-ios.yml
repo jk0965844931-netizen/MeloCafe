@@ -40,12 +40,20 @@ jobs:
             -G Ninja \
             2>&1 | tee cmake-output.log || exit 1
 
-      - name: Upload CMake output (on failure)
-        if: failure()
+      - name: Upload CMake output (always)
         uses: actions/upload-artifact@v4
         with:
           name: cmake-output-log
           path: cmake-output.log
+
+      - name: Check CMake targets
+        run: |
+          echo "=== Checking for build.ninja ==="
+          ls -la build-ios/build.ninja 2>/dev/null || echo "build.ninja not found"
+          echo "=== Checking for CemuBin target ==="
+          grep -r "CemuBin" build-ios/CMakeFiles/ 2>/dev/null || echo "CemuBin not found in CMakeFiles"
+          echo "=== All targets ==="
+          cmake --build build-ios --target help 2>&1 | head -50 || echo "No targets available"
 
       - name: Build MeloCafe
         run: |
