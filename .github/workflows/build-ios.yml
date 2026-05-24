@@ -30,6 +30,10 @@ jobs:
           export VCPKG_ROOT=$(pwd)/vcpkg
           echo "VCPKG_ROOT=$VCPKG_ROOT" >> $GITHUB_ENV
 
+      - name: Clean vcpkg cache
+        run: |
+          rm -rf vcpkg/buildtrees vcpkg/downloads vcpkg/packages vcpkg/installed || true
+
       - name: Apply pre-emptive build fixes
         run: |
           # Temporarily disabled - fixes are breaking CMake configuration
