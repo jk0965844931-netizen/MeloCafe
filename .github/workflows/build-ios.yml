@@ -37,6 +37,7 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE=.github/ios-build-toolchain.cmake \
             -DENABLE_VCPKG=OFF \
             -DIS_IOS=ON \
+            -DCMAKE_PREFIX_PATH="$(brew --prefix sdl2):$(brew --prefix openssl):$(brew --prefix curl):$(brew --prefix glm):$(brew --prefix zstd):$(brew --prefix libzip)" \
             -G Ninja \
             2>&1 | tee cmake-output.log || exit 1
 
