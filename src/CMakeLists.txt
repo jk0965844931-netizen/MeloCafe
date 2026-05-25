@@ -56,12 +56,14 @@ add_executable(CemuBin
 )
 
 # iOS-specific code (must be after add_executable)
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/ios/CMakeLists.txt")
-    add_subdirectory(ios)  # iOS-specific code
-elseif(IS_IOS)
-    message(STATUS "iOS stub GUI directory not found, using placeholder")
-else()
-    add_subdirectory(ios)  # iOS-specific code
+if(IS_IOS)
+    # For iOS, add iOS-specific main and platform code
+    target_sources(CemuBin PRIVATE
+        ios/iOSMain.cpp
+        ios/iOSApp.cpp
+        ios/CafeIOS.cpp
+    )
+    target_include_directories(CemuBin PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
 if(MSVC AND MSVC_VERSION EQUAL 1940)
