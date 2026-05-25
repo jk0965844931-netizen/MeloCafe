@@ -59,9 +59,9 @@ add_executable(CemuBin
 if(IS_IOS)
     # For iOS, add iOS-specific main and platform code
     target_sources(CemuBin PRIVATE
-        ios/iOSMain.cpp
-        ios/iOSApp.cpp
-        ios/CafeIOS.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ios/iOSMain.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ios/iOSApp.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ios/CafeIOS.cpp
     )
     target_include_directories(CemuBin PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
